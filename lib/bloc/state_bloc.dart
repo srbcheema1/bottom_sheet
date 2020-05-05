@@ -3,7 +3,7 @@ import 'dart:async';
 
 class StateBloc {
   StreamController animationController = StreamController();
-  final StateProvider provider = StateProvider();
+  StateProvider provider = StateProvider();
 
   Stream get animationStatus => animationController.stream;
 
