@@ -10,8 +10,6 @@ class CustomBottomSheet extends StatefulWidget {
 }
 
 class _CustomBottomSheetState extends State<CustomBottomSheet> with SingleTickerProviderStateMixin {
-  double sheetTop = 400;
-  double minSheetTop = 30;
 
   Animation<double> animation;
   AnimationController controller;
@@ -19,8 +17,14 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> with SingleTicker
   @override
   void initState() {
     super.initState();
-    controller = AnimationController(duration: const Duration(milliseconds: 200), vsync: this);
-    animation = Tween<double>(begin: sheetTop, end: minSheetTop)
+  }
+
+  @override
+  didChangeDependencies() {
+    super.didChangeDependencies();
+    double sheetTop = MediaQuery.of(context).size.height - 200;
+    controller = AnimationController(duration: const Duration(milliseconds: 500), vsync: this);
+    animation = Tween<double>(begin: sheetTop, end: 90)
                 .animate(CurvedAnimation(
                   parent: controller,
                   curve: Curves.easeInOut,
@@ -41,27 +45,17 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> with SingleTicker
     stateBloc.toggleAnimation();
   }
 
-  bool isExpanded = false;
-
   @override
   Widget build(BuildContext context) {
     return Positioned(
       top: animation.value,
       left: 0,
       child: GestureDetector(
-        onTap: () {
-           controller.isCompleted ? reverseAnimation() : forwardAnimation();
-        },
         onVerticalDragEnd: (DragEndDetails dragEndDetails) {
-          //upward drag
           if (dragEndDetails.primaryVelocity < 0.0) {
             forwardAnimation();
-            controller.forward();
           } else if (dragEndDetails.primaryVelocity > 0.0) {
-            //downward drag
             reverseAnimation();
-          } else {
-            return;
           }
         },
         child: SheetContainer(),
@@ -79,8 +73,9 @@ class SheetContainer extends StatelessWidget {
       height: MediaQuery.of(context).size.height,
       width: MediaQuery.of(context).size.width,
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(40)),
-          color: Color(0xfff1f1f1)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(40)),
+        color: Color(0xfff1f1f1),
+      ),
       child: Column(
         children: <Widget>[
           drawerHandle(),

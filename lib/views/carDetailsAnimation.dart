@@ -2,7 +2,6 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rentcar_app/bloc/state_bloc.dart';
-import 'package:rentcar_app/bloc/state_provider.dart';
 
 import '../model/car.dart';
 
@@ -11,8 +10,7 @@ class CarDetailsAnimation extends StatefulWidget {
   _CarDetailsAnimationState createState() => _CarDetailsAnimationState();
 }
 
-class _CarDetailsAnimationState extends State<CarDetailsAnimation>
-    with TickerProviderStateMixin {
+class _CarDetailsAnimationState extends State<CarDetailsAnimation> with TickerProviderStateMixin {
   AnimationController fadeController;
   AnimationController scaleController;
 
@@ -22,15 +20,10 @@ class _CarDetailsAnimationState extends State<CarDetailsAnimation>
   @override
   void initState() {
     super.initState();
-
-    fadeController =
-        AnimationController(duration: Duration(milliseconds: 180), vsync: this);
-
-    scaleController =
-        AnimationController(duration: Duration(milliseconds: 350), vsync: this);
-
+    fadeController = AnimationController(duration: Duration(milliseconds: 600), vsync: this);
+    scaleController = AnimationController(duration: Duration(milliseconds: 500), vsync: this);
     fadeAnimation = Tween(begin: 0.0, end: 1.0).animate(fadeController);
-    scaleAnimation = Tween(begin: 0.8, end: 1.0).animate(CurvedAnimation(
+    scaleAnimation = Tween(begin: 0.7, end: 1.0).animate(CurvedAnimation(
       parent: scaleController,
       curve: Curves.easeInOut,
       reverseCurve: Curves.easeInOut,
@@ -50,19 +43,19 @@ class _CarDetailsAnimationState extends State<CarDetailsAnimation>
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<Object>(
-        initialData: StateProvider().isAnimating,
-        stream: stateBloc.animationStatus,
-        builder: (context, snapshot) {
-          snapshot.data ? forward() : reverse();
-
-          return ScaleTransition(
-            scale: scaleAnimation,
-            child: FadeTransition(
-              opacity: fadeAnimation,
-              child: CarDetails(),
-            ),
-          );
-        });
+      initialData: false,
+      stream: stateBloc.sheetup,
+      builder: (context, snapshot) {
+        snapshot.data ? reverse() : forward();
+        return ScaleTransition(
+          scale: scaleAnimation,
+          child: FadeTransition(
+            opacity: fadeAnimation,
+            child: CarDetails(),
+          ),
+        );
+      }
+    );
   }
 }
 
@@ -98,7 +91,8 @@ class CarDetails extends StatelessWidget {
                 TextSpan(text: "\n"),
                 TextSpan(
                     text: currentCar.carName,
-                    style: TextStyle(fontWeight: FontWeight.w700)),
+                    style: TextStyle(fontWeight: FontWeight.w700)
+                ),
               ]),
         ),
         SizedBox(height: 10),

@@ -1,19 +1,17 @@
-import 'state_provider.dart';
 import 'dart:async';
 
-class StateBloc {
-  StreamController animationController = StreamController();
-  StateProvider provider = StateProvider();
+import 'package:rxdart/rxdart.dart';
 
-  Stream get animationStatus => animationController.stream;
+class StateBloc {
+  var _sheetup = BehaviorSubject<bool>.seeded(false);
+  Stream<bool> get sheetup => _sheetup.stream;
 
   void toggleAnimation() {
-    provider.toggleAnimationValue();
-    animationController.sink.add(provider.isAnimating);
+    _sheetup.sink.add(!_sheetup.value);
   }
 
   void dispose() {
-    animationController.close();
+    _sheetup.close();
   }
 }
 
