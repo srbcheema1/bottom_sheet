@@ -10,29 +10,20 @@ class CustomBottomSheet extends StatefulWidget {
 }
 
 class _CustomBottomSheetState extends State<CustomBottomSheet> with SingleTickerProviderStateMixin {
-
-  Animation<double> animation;
+  Animation<RelativeRect> animation;
   AnimationController controller;
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   didChangeDependencies() {
     super.didChangeDependencies();
     double sheetTop = MediaQuery.of(context).size.height - 200;
     controller = AnimationController(duration: const Duration(milliseconds: 500), vsync: this);
-    animation = Tween<double>(begin: sheetTop, end: 90)
+    animation = RelativeRectTween(begin: RelativeRect.fromLTRB(0, sheetTop, 0, -400), end: RelativeRect.fromLTRB(0, 60, 0,0))
                 .animate(CurvedAnimation(
                   parent: controller,
-                  curve: Curves.easeInOut,
+                  curve: Curves.,
                   reverseCurve: Curves.easeInOut,
-                ))
-                ..addListener(() {
-                  setState(() {});
-                });
+                ));
   }
 
   forwardAnimation() {
@@ -47,16 +38,12 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> with SingleTicker
 
   @override
   Widget build(BuildContext context) {
-    return Positioned(
-      top: animation.value,
-      left: 0,
+    return PositionedTransition(
+      rect: animation,
       child: GestureDetector(
         onVerticalDragEnd: (DragEndDetails dragEndDetails) {
-          if (dragEndDetails.primaryVelocity < 0.0) {
-            forwardAnimation();
-          } else if (dragEndDetails.primaryVelocity > 0.0) {
-            reverseAnimation();
-          }
+          if (dragEndDetails.primaryVelocity < 0.0) forwardAnimation();
+          else if (dragEndDetails.primaryVelocity > 0.0) reverseAnimation();
         },
         child: SheetContainer(),
       ),
@@ -101,7 +88,8 @@ class SheetContainer extends StatelessWidget {
       height: 3,
       width: 65,
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15), color: Color(0xffd9dbdb)),
+        borderRadius: BorderRadius.circular(15), color: Color(0xffd9dbdb)
+      ),
     );
   }
 
